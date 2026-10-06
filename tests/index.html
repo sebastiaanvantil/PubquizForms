@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tests – puntentelling en namen</title>
+  <style>
+    body { font: 16px/1.4 system-ui, sans-serif; margin: 16px; background: #14110f; color: #f4efe6; }
+    h1 { font-size: 20px; }
+    h2 { font-size: 16px; margin: 20px 0 6px; }
+    #summary { font-size: 20px; font-weight: 700; padding: 12px; border-radius: 8px; }
+    .ok #summary { background: #1f6b3a; }
+    .fail #summary { background: #9b1c1c; }
+    ul { list-style: none; padding: 0; margin: 0; }
+    li { padding: 3px 0; }
+    li.bad { color: #ff9a9a; font-weight: 700; }
+    code { font-size: 13px; }
+  </style>
+</head>
+<body>
+  <h1>Tests – puntentelling en namen</h1>
+  <div id="summary">Bezig…</div>
+  <div id="out"></div>
+  <script type="module">
+    import { getResults } from './tests.js';
+
+    const results = getResults();
+    const failed = results.filter((r) => !r.ok);
+    document.body.className = failed.length ? 'fail' : 'ok';
+    document.getElementById('summary').textContent = failed.length
+      ? `${failed.length} van ${results.length} tests mislukt`
+      : `Alle ${results.length} tests geslaagd`;
+
+    const out = document.getElementById('out');
+    let list = null;
+    let suite = null;
+    for (const r of results) {
+      if (r.suite !== suite) {
+        suite = r.suite;
+        const h = document.createElement('h2');
+        h.textContent = suite;
+        list = document.createElement('ul');
+        out.append(h, list);
+      }
+      const li = document.createElement('li');
+      li.className = r.ok ? 'good' : 'bad';
+      li.textContent = `${r.ok ? '✓' : '✗'} ${r.label}`;
+      if (!r.ok) {
+        const code = document.createElement('code');
+        code.textContent = ` — verwacht ${r.expected}, kreeg ${r.actual}`;
+        li.append(code);
+      }
+      list.append(li);
+    }
+  </script>
+</body>
+</html>
