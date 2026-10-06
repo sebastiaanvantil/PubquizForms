@@ -1128,7 +1128,9 @@ const SHEETS = {
 
 function renderKey() {
   return JSON.stringify([
-    A.user?.uid, A.user === undefined, A.denied, A.loginError, A.busy, A.quiz, A.people, A.game,
+    // JSON turns undefined into null, so "still loading" needs its own flags.
+    A.user?.uid, A.user === undefined, A.quiz === undefined, A.game === undefined,
+    A.denied, A.loginError, A.busy, A.quiz, A.people, A.game,
     (A.user === undefined || A.quiz === undefined || A.game === undefined) && Date.now() - startedAt > 8000,
     A.groups.map((g) => [g.id, g.name, g.disqualified, g.isTest, isQuiet(g)]),
     A.entries.map((e) => [e.id, e.points]), A.answers.map((a) => a.id),
