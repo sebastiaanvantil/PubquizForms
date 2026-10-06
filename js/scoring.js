@@ -181,6 +181,23 @@ export function scoreItem(item, values, context) {
 }
 
 /**
+ * Ranked scoreboard for the active (not disqualified) groups.
+ * `groups` is [{ id, name, disqualified }]. Equal totals share a rank.
+ * Returns [{ groupId, name, total, rank }], best first.
+ */
+export function buildScoreboard(groups, entries) {
+  const totals = computeTotals(entries);
+  const rows = groups
+    .filter((g) => !g.disqualified)
+    .map((g) => ({ groupId: g.id, name: g.name, total: totals[g.id] ?? 0 }))
+    .sort((a, b) => b.total - a.total || String(a.name).localeCompare(String(b.name), 'nl'));
+  rows.forEach((row, i) => {
+    row.rank = i > 0 && row.total === rows[i - 1].total ? rows[i - 1].rank : i + 1;
+  });
+  return rows;
+}
+
+/**
  * Totals per group from the score log.
  *
  * Entries are { groupId, itemId, points, source, createdAt }.

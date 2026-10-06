@@ -6,7 +6,7 @@
 
 import {
   parseNumber, scoreMc, scoreExactNumber, scoreMarginNumber, scoreClosestRank,
-  scoreSortTwoBins, bonusPoints, scoreItem, computeTotals,
+  scoreSortTwoBins, bonusPoints, scoreItem, computeTotals, buildScoreboard,
 } from '../js/scoring.js';
 import { normalizeName, groupNameKey, levenshtein, matchName, scoreName } from '../js/names.js';
 
@@ -243,6 +243,23 @@ suite('computeTotals', () => {
     { groupId: 'a', itemId: 'q1', points: -1, source: 'penalty', createdAt: 3 },
     { groupId: 'a', itemId: null, points: 5, source: 'manual', createdAt: 4 },
   ]), { a: 4 }, 'penalties and manual points always add up');
+});
+
+suite('buildScoreboard', () => {
+  const groups = [
+    { id: 'a', name: 'Alfa' }, { id: 'b', name: 'Bravo' }, { id: 'c', name: 'Charlie' },
+    { id: 'd', name: 'Delta', disqualified: true }, { id: 'e', name: 'Echo' },
+  ];
+  const entries = [
+    { groupId: 'a', itemId: 'q1', points: 2, source: 'auto', createdAt: 1 },
+    { groupId: 'b', itemId: 'q1', points: 5, source: 'auto', createdAt: 1 },
+    { groupId: 'c', itemId: 'q1', points: 2, source: 'auto', createdAt: 1 },
+    { groupId: 'd', itemId: 'q1', points: 9, source: 'auto', createdAt: 1 },
+  ];
+  const board = buildScoreboard(groups, entries);
+  eq(board.map((r) => r.name), ['Bravo', 'Alfa', 'Charlie', 'Echo'], 'sorted by total then name, disqualified left out');
+  eq(board.map((r) => r.rank), [1, 2, 2, 4], 'equal totals share a rank');
+  eq(board.map((r) => r.total), [5, 2, 2, 0], 'groups without entries have 0');
 });
 
 export function getResults() {

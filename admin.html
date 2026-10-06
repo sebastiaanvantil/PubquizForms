@@ -5,22 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#2b1d11">
   <meta name="robots" content="noindex">
-  <title>Pubquiz Huisweekend</title>
+  <title>Pubquiz – admin</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="admin">
   <header class="topbar" id="topbar" hidden>
     <div class="who" id="who"></div>
     <div class="where" id="where"></div>
     <div class="timer" id="timer" hidden></div>
   </header>
-  <div class="banner" id="offline" hidden>Geen verbinding. Even geduld…</div>
+  <div class="toasts" id="toasts"></div>
 
   <main id="view">
     <div class="status"><div class="icon">🍺</div><h1>Laden…</h1></div>
   </main>
 
-  <noscript>Zet JavaScript aan om mee te doen.</noscript>
-  <script type="module" src="js/player.js"></script>
+  <footer class="bottombar" id="bottombar" hidden></footer>
+  <section class="sheet" id="sheet" hidden></section>
+
+  <script type="module" src="js/admin.js"></script>
 </body>
 </html>

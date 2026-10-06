@@ -2,6 +2,7 @@
 // Players never see scores or whether an answer was right; the security
 // rules enforce that, this file only keeps the screen honest.
 
+import { $, h, confirmDialog, closeConfirm } from './dom.js';
 import { parseNumber } from './scoring.js';
 import { groupNameKey } from './names.js';
 import { createSorter, seededShuffle } from './dragsort.js';
@@ -10,21 +11,6 @@ const HEARTBEAT_MS = 10000;
 const BLUR_DEBOUNCE_MS = 1000;
 const AWAY_KEY = 'pq-away';
 const CURRENCY = { EUR: '€', USD: '$' };
-
-const $ = (id) => document.getElementById(id);
-
-function h(tag, props = {}, ...children) {
-  const node = document.createElement(tag);
-  for (const [key, value] of Object.entries(props)) {
-    if (value == null || value === false) continue;
-    if (key === 'class') node.className = value;
-    else if (key.startsWith('on')) node.addEventListener(key.slice(2), value);
-    else if (key in node) node[key] = value;
-    else node.setAttribute(key, value);
-  }
-  node.append(...children.flat().filter((c) => c != null && c !== false));
-  return node;
-}
 
 // ---------- state ----------
 
@@ -61,32 +47,6 @@ function saveDraft(itemId, value) {
   try {
     sessionStorage.setItem(`pq-draft-${itemId}`, JSON.stringify(value));
   } catch { /* storage unavailable: the draft just does not survive a reload */ }
-}
-
-// ---------- confirm dialog ----------
-
-let closeConfirm = () => {};
-
-function confirmDialog({ title, body, okLabel }) {
-  const dialog = $('confirm');
-  $('confirmTitle').textContent = title;
-  $('confirmBody').replaceChildren(...body.filter(Boolean));
-  $('confirmOk').textContent = okLabel;
-  return new Promise((resolve) => {
-    const finish = (result) => {
-      $('confirmOk').onclick = null;
-      $('confirmCancel').onclick = null;
-      dialog.oncancel = null;
-      closeConfirm = () => {};
-      if (dialog.open) dialog.close();
-      resolve(result);
-    };
-    $('confirmOk').onclick = () => finish(true);
-    $('confirmCancel').onclick = () => finish(false);
-    dialog.oncancel = () => finish(false);
-    closeConfirm = () => finish(false);
-    dialog.showModal();
-  });
 }
 
 // ---------- rendering ----------

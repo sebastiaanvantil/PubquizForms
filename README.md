@@ -14,7 +14,18 @@ Realtime pubquiz-website: spelers doen mee op hun telefoon, de admin bestuurt he
 | Puntentelling en naammatching (`js/scoring.js`, `js/names.js`) | klaar, met tests |
 | Security rules (`firestore.rules`) | gepubliceerd, nog niet volledig getest |
 | Spelerspagina (`index.html`) | gebouwd; ronde 4 werkt met tikken, slepen volgt |
-| Adminpaneel, beamerpagina | nog niet gebouwd |
+| Adminpaneel (`admin.html`) | gebouwd; schermen gecontroleerd, schrijven naar Firebase nog niet getest |
+| Beamerpagina | nog niet gebouwd |
+
+### Eerste keer het adminpaneel gebruiken
+
+1. Start de lokale server en open <http://localhost:8080/admin.html>.
+2. Log in met het adminaccount uit stap 4 van de Firebase-instructies.
+3. Kies **Quiz importeren** en selecteer `private/quiz-data.json`.
+4. Je staat nu in de lobby. Onderin staat steeds de volgende stap; linksonder zit het menu (☰).
+5. Open in een incognitovenster <http://localhost:8080/> om als groepje mee te doen, of maak testgroepjes via **Menu → Testmodus en reset**.
+
+Een vraag sluit vanzelf zodra alle actieve groepjes hebben ingediend; je telefoon trilt en je krijgt een melding. Loopt de timer af, dan krijg je alleen een seintje en sluit je de vraag zelf (of je geeft extra tijd).
 
 ### Voorbeeldschermen van de spelerspagina
 
