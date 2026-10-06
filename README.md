@@ -7,16 +7,15 @@ Realtime pubquiz-website: spelers doen mee op hun telefoon, de admin bestuurt he
 
 > **Let op:** deze repo is publiek. Antwoorden, quotes, prijzen en aliassen staan alleen in `private/` (gitignored) en komen pas in Firestore via de import in het adminpaneel.
 
-## Status
+## Pagina's
 
-| Onderdeel | Status |
-|---|---|
-| Puntentelling en naammatching (`js/scoring.js`, `js/names.js`) | klaar, met tests |
-| Security rules (`firestore.rules`) | gepubliceerd, nog niet volledig getest |
-| Spelerspagina (`index.html`) | gebouwd; ronde 4 werkt met tikken, slepen volgt |
-| Adminpaneel (`admin.html`) | gebouwd; schermen gecontroleerd, schrijven naar Firebase nog niet getest |
-| Beamerpagina | nog niet gebouwd |
+| Pagina | Voor wie | Adres na het aanzetten van GitHub Pages |
+|---|---|---|
+| Spelerspagina | de groepjes, op hun telefoon | <https://sebastiaanvantil.github.io/PubquizForms/> |
+| Adminpaneel | Seb, op zijn telefoon | <https://sebastiaanvantil.github.io/PubquizForms/admin.html> |
+| Beamerpagina | de laptop aan de beamer | <https://sebastiaanvantil.github.io/PubquizForms/beamer.html> |
 
+Alles is gebouwd. Lokaal en met testgroepjes is een ronde gespeeld; de generale repetitie met echte telefoons (zie onderaan) moet nog gebeuren.
 ### Eerste keer het adminpaneel gebruiken
 
 1. Start de lokale server en open <http://localhost:8080/admin.html>.
@@ -108,3 +107,125 @@ Open daarna <http://localhost:8080/>. Stoppen doe je met Ctrl+C. De server geeft
 ## Quizdata
 
 `private/quiz-data.json` bevat de rondes, de antwoorden en de personen met hun aliassen. Het bestand wordt nooit gecommit. Je uploadt het straks in het adminpaneel, dat het naar Firestore schrijft (`quiz/definition` en `people`).
+
+## GitHub Pages aanzetten (eenmalig)
+
+1. Push de repo naar GitHub: `git push -u origin main`.
+2. Ga op GitHub naar de repo **PubquizForms → Settings → Pages**.
+3. Kies bij **Source** voor **Deploy from a branch**.
+4. Kies bij **Branch** voor `main` en de map `/ (root)`, en klik op **Save**.
+5. Wacht een minuut of twee. Bovenaan dezelfde pagina verschijnt het adres van de site.
+6. Controleer dat `sebastiaanvantil.github.io` bij de authorized domains van Firebase staat (zie "Firebase instellen", stap 7). Anders werkt inloggen en aanmelden niet op de echte site.
+
+Na elke `git push` staat de nieuwe versie er binnen een paar minuten. Herlaad daarna de pagina op elke telefoon.
+
+## De beamer
+
+1. Open op de laptop `beamer.html` en log in met het adminaccount.
+2. Klik op **Volledig scherm** (of druk op F11).
+3. Wissel met Alt+Tab tussen de PowerPoint en de beamerpagina.
+
+Wat de beamerpagina toont, kies je op je telefoon via **Menu → Beamer**:
+
+- **Aanmelden**: QR-code naar de spelerspagina en de groepjes die zich al hebben aangemeld.
+- **Wachten**: een neutraal scherm met de ronde.
+- **Scorebord**: de stand, die zich van onder naar boven opbouwt. Na elke ronde staat hiervoor ook een knop direct boven de grote knop.
+
+De QR-code wijst altijd naar de echte site, ook als je de beamerpagina lokaal opent.
+
+## Generale repetitie
+
+Doe dit één keer helemaal, op de echte site (dus na het aanzetten van GitHub Pages), met minstens twee echte telefoons: een iPhone met Safari en een Android-toestel met Chrome. Vul zo nodig aan met incognitovensters en testgroepjes.
+
+### Voorbereiding
+
+1. Open het adminpaneel op je telefoon en log in.
+2. Kies **Menu → Testmodus en reset → Reset het hele spel**, zodat je schoon begint.
+3. Open de beamerpagina op de laptop, log in en zet hem op **Aanmelden**.
+4. Laat elke telefoon de QR-code scannen en een groepsnaam kiezen.
+5. Maak er via de testmodus een paar testgroepjes bij.
+
+### Controlelijst
+
+Vink af wat werkt. Elke regel beschrijft wat je doet en wat je hoort te zien.
+
+**Aanmelden**
+
+- [ ] Twee telefoons kiezen dezelfde groepsnaam (ook met andere hoofdletters) → de tweede krijgt "Deze naam is al bezet".
+- [ ] Zet de aanmelding dicht en probeer je met een nieuwe telefoon aan te melden → "Aanmelden is gesloten".
+- [ ] Herlaad de pagina op een aangemelde telefoon → het groepje is nog steeds aangemeld.
+
+**Een vraag spelen**
+
+- [ ] Open vraag 1 → alle telefoons tonen het formulier en dezelfde aftellende timer (hooguit een seconde verschil).
+- [ ] Dien op één telefoon in → de teller in het adminpaneel gaat omhoog en de telefoon toont "Antwoord ingediend".
+- [ ] Herlaad een telefoon die al heeft ingediend → hij toont weer "Antwoord ingediend", niet het formulier.
+- [ ] Typ op een telefoon een antwoord zonder in te dienen en herlaad → wat je typte staat er nog.
+- [ ] Laat alle groepjes indienen (testgroepjes via de testmodus) → de vraag sluit vanzelf en je telefoon trilt.
+- [ ] Toon het antwoord → de punten kloppen, en met − en + kun je ze per groepje aanpassen.
+
+**De deadline**
+
+- [ ] Open een vraag en laat één telefoon de timer uitzitten → hij toont "Tijd is op" en het formulier is weg.
+- [ ] Zet een telefoon in vliegtuigmodus terwijl een vraag openstaat, tik op indienen, wacht tot de timer voorbij is en zet de verbinding weer aan → het antwoord wordt geweigerd ("Niet ontvangen") en komt niet in het adminpaneel.
+- [ ] Geef met **+30 s** extra tijd nadat de tijd op was → het formulier komt terug op de telefoons.
+
+**Dubbel indienen en meekijken (in de browser op een laptop)**
+
+Meld een groepje aan in een gewoon venster, open een vraag, druk op F12 en ga naar het tabblad **Console**. Plak dit, en vervang `r1q1` door het item dat openstaat:
+
+```js
+const fb = await import('/PubquizForms/js/firebase.js'); // lokaal: '/js/firebase.js'
+const { getApp } = await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js');
+const db = fb.getFirestore(getApp('player'));
+const uid = fb.getAuth(getApp('player')).currentUser.uid;
+const probeer = async (naam, actie) => {
+  try { await actie(); console.log('❌ GELUKT (hoort niet):', naam); }
+  catch (e) { console.log('✅ geweigerd:', naam, e.code); }
+};
+await probeer('antwoordsleutel lezen', () => fb.getDoc(fb.doc(db, 'quiz', 'definition')));
+await probeer('scores lezen', () => fb.getDocs(fb.collection(db, 'scoreEntries')));
+await probeer('alle antwoorden lezen', () => fb.getDocs(fb.collection(db, 'answers')));
+await probeer('alle groepjes lezen', () => fb.getDocs(fb.collection(db, 'groups')));
+await probeer('personen lezen', () => fb.getDocs(fb.collection(db, 'people')));
+await probeer('meldingen lezen', () => fb.getDocs(fb.collection(db, 'events')));
+await probeer('spelstatus aanpassen', () => fb.updateDoc(fb.doc(db, 'game', 'state'), { phase: 'lobby' }));
+await probeer('eigen naam aanpassen', () => fb.updateDoc(fb.doc(db, 'groups', uid), { name: 'Valsspeler' }));
+await probeer('zichzelf punten geven', () => fb.addDoc(fb.collection(db, 'scoreEntries'), { groupId: uid, points: 99 }));
+```
+
+- [ ] Elke regel begint met ✅. Een ❌ betekent een lek in de rules: meld het en speel de quiz niet voordat het is opgelost.
+- [ ] Dien daarna gewoon een antwoord in en plak dit (zelfde venster) → ook ✅, twee keer:
+
+```js
+const ref = fb.doc(db, 'answers', 'r1q1_' + uid); // het item dat openstaat
+await probeer('antwoord wijzigen', () => fb.setDoc(ref, { groupId: uid, itemId: 'r1q1', value: 'A', submittedAt: fb.serverTimestamp() }));
+await probeer('antwoord verwijderen', () => fb.deleteDoc(ref));
+```
+
+**Tab-meldingen (op iPhone Safari én Android Chrome)**
+
+Doe elk van deze dingen terwijl er een vraag openstaat. Je telefoon met het adminpaneel hoort te trillen en een melding te tonen met de groepsnaam en de duur.
+
+- [ ] Wissel naar een andere app en kom terug.
+- [ ] Open een nieuw tabblad en kom terug.
+- [ ] Vergrendel het scherm en ontgrendel het weer.
+- [ ] Doe hetzelfde in de lobby → er komt géén melding.
+- [ ] Tik op **Strafpunt** → het groepje verliest een punt (zie **Menu → Scores**), en bij **Menu → Handmatige punten** kun je het terugdraaien.
+- [ ] Zet een telefoon een halve minuut uit of in vliegtuigmodus → het groepje krijgt het label "stil" in het adminpaneel.
+
+**Ronde 4**
+
+- [ ] Houd een naam vast en sleep hem naar een vak; sleep hem ook weer terug.
+- [ ] Scroll met je duim over de namen → er wordt niets per ongeluk versleept.
+- [ ] Tik een naam aan en tik daarna op een vak → de naam verhuist.
+- [ ] Dien in met een paar namen niet geplaatst → je krijgt eerst een waarschuwing.
+
+**Bonus, scorebord en afronden**
+
+- [ ] Open een bonus → de telefoons tonen "Bonusronde!"; tik de groepjes aan in volgorde en sla op.
+- [ ] Sla een andere bonus over → er komen geen punten bij.
+- [ ] Zet na een ronde het scorebord op de beamer → de stand bouwt zich op en is van achter in de kamer leesbaar.
+- [ ] Controleer op een telefoon van een groepje dat nergens een score of goed/fout te zien is.
+- [ ] Diskwalificeer een testgroepje → het verdwijnt van het scorebord.
+- [ ] Reset het spel aan het eind, zodat je op de avond zelf schoon begint. De quiz en je timers blijven staan.

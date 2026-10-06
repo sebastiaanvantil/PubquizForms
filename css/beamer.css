@@ -1,0 +1,94 @@
+/* Beamer view: laptop on a projector, readable from the back of the room. */
+
+.beamer { overflow: hidden; height: 100vh; }
+
+.beamer main {
+  max-width: none;
+  height: 100vh;
+  padding: 4vh 5vw;
+  gap: 3vh;
+  justify-content: center;
+}
+
+.beamer #fullscreen {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  width: auto;
+  opacity: 0.6;
+}
+.beamer:fullscreen #fullscreen, .beamer.is-fullscreen #fullscreen { display: none; }
+
+.beamer form { width: min(92vw, 440px); margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+
+.b-title { font-size: 7vh; font-weight: 900; line-height: 1.1; text-align: center; color: var(--accent); }
+.b-sub { font-size: 4vh; text-align: center; color: var(--muted); }
+
+/* waiting */
+.b-wait { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3vh; flex: 1; }
+.b-wait .icon { font-size: 22vh; line-height: 1; }
+.b-wait .b-title { font-size: 11vh; }
+
+/* join */
+.b-join { display: grid; grid-template-columns: auto 1fr; gap: 5vw; align-items: center; flex: 1; min-height: 0; }
+.b-qr { padding: 2.5vh; border-radius: 3vh; background: #fff; }
+.b-qr img, .b-qr canvas { display: block; width: 52vh; height: 52vh; }
+.b-join h1 { font-size: 8vh; line-height: 1.1; color: var(--accent); }
+.b-join .url { margin-top: 2vh; font-size: 3.6vh; font-weight: 700; overflow-wrap: anywhere; }
+.b-join .steps { margin-top: 3vh; font-size: 3.4vh; color: var(--muted); }
+.b-join .closed { color: var(--danger); font-weight: 800; }
+.b-groups { display: flex; flex-wrap: wrap; gap: 1.4vh; margin-top: 3vh; }
+.b-groups span {
+  padding: 0.8vh 1.8vh;
+  border: 0.3vh solid var(--line);
+  border-radius: 1.6vh;
+  background: var(--surface);
+  font-size: 3.2vh;
+  font-weight: 800;
+  animation: pop 0.4s both;
+}
+
+/* scoreboard */
+.b-board { display: flex; flex-direction: column; gap: 1.2vh; flex: 1; min-height: 0; }
+.b-row {
+  position: relative;
+  flex: 1 1 0;
+  max-height: 13vh;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 9vh 1fr auto;
+  align-items: center;
+  gap: 2vw;
+  padding: 0 2.5vw;
+  border-radius: 1.8vh;
+  background: var(--surface);
+  overflow: hidden;
+  font-size: min(5.5vh, calc(60vh / var(--rows)));
+  font-weight: 800;
+}
+.b-row .bar {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--share);
+  background: var(--surface-2);
+  border-right: 0.5vh solid var(--accent);
+}
+.b-row > * { position: relative; }
+.b-row .rank { font-size: 1.1em; font-weight: 900; color: var(--accent); }
+.b-row .name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.b-row .total { font-size: 1.2em; font-weight: 900; font-variant-numeric: tabular-nums; }
+.b-row.first { background: var(--accent); color: var(--accent-ink); }
+.b-row.first .rank { color: var(--accent-ink); }
+.b-row.first .bar { background: rgba(255, 255, 255, 0.28); border-color: var(--accent-ink); }
+
+/* The standings build up from the bottom of the table to the leader. */
+.b-board.animate .b-row { animation: rise 0.6s both; animation-delay: calc(var(--order) * 0.45s); }
+.b-board.animate .b-row .bar { animation: grow 0.9s both; animation-delay: calc(var(--order) * 0.45s + 0.2s); }
+
+@keyframes rise { from { opacity: 0; transform: translateY(6vh); } }
+@keyframes grow { from { width: 0; } }
+@keyframes pop { from { opacity: 0; transform: scale(0.6); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .b-board.animate .b-row, .b-board.animate .b-row .bar, .b-groups span { animation: none; }
+}

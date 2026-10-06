@@ -117,7 +117,7 @@ Dit staat in `js/names.js` en heeft tests.
 ## Spelers-UI-eisen
 
 - Bij aanmelden: groepsnaam (2–24 tekens, uniek). Daarna blijft het groepje aangemeld via de anonieme Firebase-sessie, ook na herladen of als de verbinding wegvalt.
-- Het scherm toont altijd ronde, vraag, timer en de status van het formulier. Laat een "Weet je het zeker?"-bevestiging zien vóór indienen. Daarna is het formulier vergrendeld.
+- Het scherm toont altijd ronde, vraag, timer en de status van het formulier. Laat een "Weet je het zeker?"-bevestiging zien vóór indienen, met een vinkje "Dit niet meer vragen" waarmee het groepje de bevestiging voor volgende vragen uitzet (een waarschuwing, zoals niet-geplaatste namen in ronde 4, blijft altijd verschijnen). Daarna is het formulier vergrendeld.
 - Ronde 4: touch drag & drop met Pointer Events (HTML5 drag & drop werkt niet op touch). De namen zijn per groepje willekeurig gehusseld. Er zijn twee duidelijke vakken. Een naam kan worden teruggesleept. Er is een fallback met tikken: tik een naam aan en tik daarna een vak. Indienen kan ook als nog niet alles is geplaatst, met een waarschuwing. Scrollen mag niet per ongeluk een sleep starten.
 - Geen scores, geen goed/fout-feedback.
 

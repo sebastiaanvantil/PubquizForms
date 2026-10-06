@@ -10,6 +10,7 @@ import { createSorter, seededShuffle } from './dragsort.js';
 const HEARTBEAT_MS = 10000;
 const BLUR_DEBOUNCE_MS = 1000;
 const AWAY_KEY = 'pq-away';
+const SKIP_CONFIRM_KEY = 'pq-skip-confirm';
 const CURRENCY = { EUR: '€', USD: '$' };
 
 // ---------- state ----------
@@ -297,20 +298,38 @@ function describeAnswer(g, value) {
   return { text };
 }
 
+function skipConfirm() {
+  try {
+    return localStorage.getItem(SKIP_CONFIRM_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
 async function submitAnswer(g, value) {
   if (!isComplete(g.itemType, value)) return;
   const { text, warn } = describeAnswer(g, value);
-  const ok = await confirmDialog({
-    title: 'Weet je het zeker?',
-    body: [
-      h('p', {}, 'Jullie antwoord:'),
-      h('p', { class: 'answer' }, text),
-      warn && h('p', { class: 'warn' }, warn),
-      h('p', {}, 'Indienen is definitief. Daarna kun je niets meer wijzigen.'),
-    ],
-    okLabel: 'Ja, indienen',
-  });
-  if (!ok) return;
+  // The group can switch the confirmation off. A warning is always shown.
+  if (warn || !skipConfirm()) {
+    const dontAsk = h('input', { type: 'checkbox' });
+    const ok = await confirmDialog({
+      title: 'Weet je het zeker?',
+      body: [
+        h('p', {}, 'Jullie antwoord:'),
+        h('p', { class: 'answer' }, text),
+        warn && h('p', { class: 'warn' }, warn),
+        h('p', {}, 'Indienen is definitief. Daarna kun je niets meer wijzigen.'),
+        h('label', { class: 'check' }, dontAsk, 'Dit niet meer vragen'),
+      ],
+      okLabel: 'Ja, indienen',
+    });
+    if (!ok) return;
+    if (dontAsk.checked) {
+      try {
+        localStorage.setItem(SKIP_CONFIRM_KEY, '1');
+      } catch { /* storage unavailable: keep asking */ }
+    }
+  }
   const cleaned = typeof value === 'string' ? value.trim() : value;
   setAnswerState(g.itemId, 'sending');
   try {
