@@ -1,0 +1,6 @@
+# Quiz answers, quotes, prices and aliases: never in the public repo
+private/
+*.pptx
+
+node_modules/
+.DS_Store
