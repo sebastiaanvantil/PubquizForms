@@ -48,9 +48,13 @@ De namen van knoppen in de Firebase-console veranderen af en toe. Als iets net a
 
 ### 5. Rules publiceren
 
-1. Open `firestore.rules` en vervang `<ADMIN_UID>` door de UID uit stap 4. Laat de aanhalingstekens staan.
-2. Ga in de console naar **Firestore Database → Rules**.
-3. Vervang alles in de editor door de inhoud van `firestore.rules` en klik op **Publish**.
+De rules staan in het bestand `firestore.rules` **in deze repo** (open het in VS Code). De console toont alleen wat er nu gepubliceerd is; in het begin is dat een standaardtekst van negen regels die alles blokkeert.
+
+1. Open `firestore.rules` in VS Code. De UID van het adminaccount staat er al in, in de functie `isAdmin()`.
+2. Selecteer alles (Ctrl+A) en kopieer het (Ctrl+C).
+3. Ga in de console naar **Firestore Database → Rules**. Als de editor niet bewerkbaar is, klik dan eerst op **Develop and Test**.
+4. Klik in de editor, selecteer alles (Ctrl+A) en plak (Ctrl+V), zodat de standaardtekst helemaal vervangen is.
+5. Klik op **Publish**.
 
 De UID is niet geheim en mag in de repo staan. Elke keer dat `firestore.rules` verandert, moet je de nieuwe versie opnieuw in de console plakken en publiceren.
 

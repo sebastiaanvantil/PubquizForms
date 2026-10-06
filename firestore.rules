@@ -3,8 +3,8 @@ rules_version = '2';
 // Security rules for the pubquiz. The UI is not trusted: everything a player
 // must not see or do is blocked here.
 //
-// Replace <ADMIN_UID> with the UID of the admin account (see README.md).
-// While the placeholder is still there, nobody is admin.
+// The admin is recognised by the UID of his account (see README.md). After
+// every change, paste this file into the Firebase console and publish it.
 
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -14,7 +14,7 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return signedIn() && request.auth.uid == '<ADMIN_UID>';
+      return signedIn() && request.auth.uid == 'tUNye3NM98S1rErWbt2qhetWVSN2';
     }
 
     function gameState() {
