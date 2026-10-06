@@ -8,7 +8,7 @@ import {
   parseNumber, scoreMc, scoreExactNumber, scoreMarginNumber, scoreClosestRank,
   scoreSortTwoBins, bonusPoints, scoreItem, computeTotals,
 } from '../js/scoring.js';
-import { normalizeName, levenshtein, matchName, scoreName } from '../js/names.js';
+import { normalizeName, groupNameKey, levenshtein, matchName, scoreName } from '../js/names.js';
 
 const results = [];
 let currentSuite = '';
@@ -122,6 +122,9 @@ suite('normalizeName / levenshtein', () => {
   eq(normalizeName('fl0'), 'fl', 'digits removed');
   eq(normalizeName('Anne-Marie'), 'annemarie', 'hyphen removed');
   eq(normalizeName(null), '', 'null');
+  eq(groupNameKey('De Bierbuiken!'), 'debierbuiken', 'group key: case, spaces, punctuation');
+  eq(groupNameKey('Team 7 één'), 'team7een', 'group key keeps digits, strips accents');
+  eq(groupNameKey('🍺🍺'), '', 'group key of only emoji is empty');
   eq(levenshtein('floor', 'flor'), 1, 'deletion');
   eq(levenshtein('flo', 'floor'), 2, 'two insertions');
   eq(levenshtein('karel', 'karen'), 1, 'substitution');

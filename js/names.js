@@ -14,6 +14,18 @@ export function normalizeName(input) {
     .replace(/[^a-z]/g, '');
 }
 
+/**
+ * Key used to keep group names unique: "De Bierbuiken!" and "de bierbuiken"
+ * are the same name. Lowercase letters and digits only.
+ */
+export function groupNameKey(name) {
+  return String(name ?? '')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '');
+}
+
 export function levenshtein(a, b) {
   if (a === b) return 0;
   if (!a.length) return b.length;

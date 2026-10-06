@@ -9,14 +9,14 @@ import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.14.1/firebas
 export * from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 export * from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 
-// TODO(Seb): paste the web config from the Firebase console here (README, step 6).
-export const firebaseConfig = {
-  apiKey: '',
-  authDomain: '',
-  projectId: '',
-  storageBucket: '',
-  messagingSenderId: '',
-  appId: '',
+// Web config from the Firebase console (README, step 6).
+const firebaseConfig = {
+  apiKey: "AIzaSyBhrZ4iSJrwAPdkxUEMOssORqoexyOoE0E",
+  authDomain: "pubquizforms.firebaseapp.com",
+  projectId: "pubquizforms",
+  storageBucket: "pubquizforms.firebasestorage.app",
+  messagingSenderId: "120224312238",
+  appId: "1:120224312238:web:e6583ea1841ed7d4f4363f"
 };
 
 export const isConfigured = Boolean(firebaseConfig.apiKey && firebaseConfig.projectId);

@@ -12,8 +12,13 @@ Realtime pubquiz-website: spelers doen mee op hun telefoon, de admin bestuurt he
 | Onderdeel | Status |
 |---|---|
 | Puntentelling en naammatching (`js/scoring.js`, `js/names.js`) | klaar, met tests |
-| Security rules (`firestore.rules`) | geschreven, nog niet gepubliceerd of getest |
-| Spelerspagina, adminpaneel, beamerpagina | nog niet gebouwd |
+| Security rules (`firestore.rules`) | gepubliceerd, nog niet volledig getest |
+| Spelerspagina (`index.html`) | gebouwd; ronde 4 werkt met tikken, slepen volgt |
+| Adminpaneel, beamerpagina | nog niet gebouwd |
+
+### Voorbeeldschermen van de spelerspagina
+
+Zonder dat er een quiz loopt kun je elk scherm bekijken met `?demo=` achter het adres, bijvoorbeeld <http://localhost:8080/?demo=mc>. Mogelijke waarden: `join`, `lobby`, `intro`, `mc`, `number`, `usd`, `km`, `year`, `name`, `sort`, `bonus`, `closed`, `reveal`, `scoreboard`, `finished`. In deze modus wordt niets naar Firebase gestuurd.
 
 ## Firebase instellen (eenmalig)
 
