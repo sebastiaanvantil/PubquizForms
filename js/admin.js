@@ -615,8 +615,18 @@ function loginView() {
   return form;
 }
 
+const startedAt = Date.now();
+
+/** Loading screen that says what it is waiting for once it takes too long. */
+function loading(waitingFor) {
+  const slow = Date.now() - startedAt > 8000;
+  return status('🍺', 'Laden…', slow
+    ? `Wacht op: ${waitingFor}. Duurt dit lang? Open de pagina in Chrome, Edge of Safari (niet in de ingebouwde browser van VS Code) en controleer je verbinding.`
+    : null);
+}
+
 function mainView() {
-  if (A.user === undefined) return status('🍺', 'Laden…');
+  if (A.user === undefined) return loading('aanmelding bij Firebase');
   if (!A.user) return loginView();
   if (A.denied) {
     return [
@@ -624,7 +634,8 @@ function mainView() {
       h('button', { class: 'btn', type: 'button', onclick: () => fb.signOut(auth) }, 'Uitloggen'),
     ];
   }
-  if (A.quiz === undefined || A.game === undefined) return status('🍺', 'Laden…');
+  if (A.quiz === undefined) return loading('de quiz uit Firestore');
+  if (A.game === undefined) return loading('de spelstatus uit Firestore');
   if (!A.quiz || !A.game) {
     return [
       status('📥', 'Nog geen quiz', 'Importeer eerst private/quiz-data.json.'),
@@ -1118,6 +1129,7 @@ const SHEETS = {
 function renderKey() {
   return JSON.stringify([
     A.user?.uid, A.user === undefined, A.denied, A.loginError, A.busy, A.quiz, A.people, A.game,
+    (A.user === undefined || A.quiz === undefined || A.game === undefined) && Date.now() - startedAt > 8000,
     A.groups.map((g) => [g.id, g.name, g.disqualified, g.isTest, isQuiet(g)]),
     A.entries.map((e) => [e.id, e.points]), A.answers.map((a) => a.id),
     A.events.map((e) => [e.id, e.handled]), A.sheet, A.bonus,
