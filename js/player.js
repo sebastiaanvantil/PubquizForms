@@ -367,10 +367,10 @@ function ensureAnswerState() {
 const away = { since: null, kind: null, itemId: null };
 let blurTimer = null;
 
-function leave(kind) {
+function leave(kind, since = Date.now()) {
   const g = S.game;
   if (away.since || !S.group || !g || g.phase !== 'question_open') return;
-  Object.assign(away, { since: Date.now(), kind, itemId: g.itemId });
+  Object.assign(away, { since, kind, itemId: g.itemId });
   try {
     localStorage.setItem(AWAY_KEY, JSON.stringify(away));
   } catch { /* ignore */ }
@@ -414,8 +414,9 @@ function watchPresence() {
   window.addEventListener('pageshow', () => comeBack('view'));
   window.addEventListener('blur', () => {
     clearTimeout(blurTimer);
+    const lostAt = Date.now();
     blurTimer = setTimeout(() => {
-      if (!document.hasFocus()) leave('blur');
+      if (!document.hasFocus()) leave('blur', lostAt);
     }, BLUR_DEBOUNCE_MS);
   });
   window.addEventListener('focus', () => {
