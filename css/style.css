@@ -428,3 +428,22 @@ label.stack { display: flex; flex-direction: column; gap: 6px; font-weight: 700;
 .toast .sub { color: var(--muted); }
 .toast .buttons { display: flex; gap: 8px; margin-top: 8px; }
 .toast .buttons .btn { flex: 1; }
+
+/* dragging in the sorter */
+.chip { user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.chip.dragging { opacity: 0.3; }
+.chip.ghost {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 50;
+  margin: 0;
+  pointer-events: none;
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.6);
+  will-change: transform;
+}
+.sorter.is-dragging .sort-target { border-color: var(--accent); }
+.sorter .over { border-style: solid; border-color: var(--accent); background: var(--surface-2); box-shadow: inset 0 0 0 3px var(--accent); }

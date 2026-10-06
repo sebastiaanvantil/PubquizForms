@@ -266,7 +266,7 @@ function answerForm(g) {
   submit.disabled = !isComplete(g.itemType, value);
   return [
     h('p', { class: 'prompt' }, prompt),
-    g.itemType === 'sort_two_bins' && h('p', { class: 'hint' }, 'Tik een naam aan en tik daarna op een vak.'),
+    g.itemType === 'sort_two_bins' && h('p', { class: 'hint' }, 'Houd een naam even vast en sleep hem naar een vak. Tikken kan ook: eerst de naam, dan het vak.'),
     control,
     error,
     h('div', { class: 'actions' }, submit),
