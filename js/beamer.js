@@ -58,7 +58,7 @@ function waitingView() {
   const round = g.roundNumber && g.phase !== 'lobby' && g.phase !== 'finished';
   return h('div', { class: 'b-wait' },
     h('div', { class: 'icon' }, '🍻'),
-    h('div', { class: 'b-title' }, 'De Grote Pubquiz'),
+    h('div', { class: 'b-title' }, 'De Grote Seb en Floor Pubquiz'),
     h('div', { class: 'b-sub' }, g.phase === 'finished' ? 'Bedankt voor het meedoen!' : round ? `Ronde ${g.roundNumber}: ${g.roundTitle}` : 'Huisweekend 2026'));
 }
 
