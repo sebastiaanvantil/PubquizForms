@@ -372,7 +372,7 @@ function leave(kind, since = Date.now()) {
   if (away.since || !S.group || !g || g.phase !== 'question_open') return;
   Object.assign(away, { since, kind, itemId: g.itemId });
   try {
-    localStorage.setItem(AWAY_KEY, JSON.stringify(away));
+    localStorage.setItem(AWAY_KEY, JSON.stringify({ ...away, group: groupStamp() }));
   } catch { /* ignore */ }
   backend.sendEvent({ type: `leave_${kind}`, awayMs: null, itemId: g.itemId, phase: g.phase });
 }
@@ -399,6 +399,8 @@ function reportInterruptedAbsence() {
     localStorage.removeItem(AWAY_KEY);
   } catch { /* ignore */ }
   if (!stored?.since) return;
+  // Left over from an earlier game or an earlier question: not worth a report.
+  if (stored.group !== groupStamp() || stored.itemId !== S.game.itemId) return;
   backend.sendEvent({
     type: `return_${stored.kind ?? 'hidden'}`, awayMs: Date.now() - stored.since,
     itemId: stored.itemId ?? null, phase: S.game.phase,
@@ -449,7 +451,30 @@ function watchPresence() {
 }
 
 /** Called by the backend whenever game or group data changed. */
+/** Identifies this group in this game; a reset or a new sign-up changes it. */
+function groupStamp() {
+  if (!S.group) return null;
+  return S.group.createdAt?.toMillis?.() ?? S.group.name;
+}
+
+let knownStamp;
+
+/** Nothing from a previous game may leak into the next one. */
+function forgetPreviousGame() {
+  const stamp = groupStamp();
+  const changed = knownStamp !== undefined && stamp !== knownStamp;
+  knownStamp = stamp;
+  if (!changed) return;
+  S.answers = {};
+  Object.assign(away, { since: null, kind: null, itemId: null });
+  try {
+    localStorage.removeItem(AWAY_KEY);
+    Object.keys(sessionStorage).filter((key) => key.startsWith('pq-draft-')).forEach((key) => sessionStorage.removeItem(key));
+  } catch { /* ignore */ }
+}
+
 function onData() {
+  if (S.group !== undefined) forgetPreviousGame();
   ensureAnswerState();
   reportInterruptedAbsence();
   render();

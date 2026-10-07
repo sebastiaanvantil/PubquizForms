@@ -247,6 +247,7 @@ function afterItem() {
 async function finishQuiz() {
   const ok = await confirmDialog({ title: 'Quiz afsluiten?', body: 'De telefoons tonen daarna dat de quiz is afgelopen.', okLabel: 'Ja, afsluiten' });
   if (ok) await updateGame({ phase: 'finished', itemId: null, deadline: null });
+  return ok;
 }
 
 function primaryAction() {
@@ -972,6 +973,9 @@ const SHEETS = {
       };
       return [
         menuButton('Terug naar de lobby', go('de lobby', () => updateGame({ phase: 'lobby', itemId: null, deadline: null }))),
+        menuButton('Quiz nu afsluiten', () => act(async () => {
+          if (await finishQuiz()) closeSheet();
+        })),
         ...A.quiz.rounds.flatMap((round, ri) => [
           h('h2', {}, `Ronde ${round.number}: ${round.title}`),
           h('div', { class: 'list' }, round.items.map((item, ii) => h('button', {
