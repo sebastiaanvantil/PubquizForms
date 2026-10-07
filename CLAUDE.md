@@ -102,6 +102,7 @@ Dit staat in `js/names.js` en heeft tests.
 - Luister op de spelerspagina naar `visibilitychange`, `pagehide`/`pageshow`, `blur`/`focus` (blur alleen met debounce) en `online`/`offline`.
 - Schrijf bij verlaten direct een event. Mobiele browsers bevriezen JavaScript vaak voordat dat gelukt is. Schrijf daarom **bij terugkomst altijd** een event met de afwezigheidsduur. Daarnaast is er een heartbeat (`lastSeen` elke 10 seconden), zodat de admin ook een "stil" groepje ziet.
 - Ook het vergrendelen van het scherm telt als verlaten.
+- Wie binnen 5 seconden terug is (bijvoorbeeld na het verversen van de pagina), geeft geen melding aan de admin; zo'n korte afwezigheid staat alleen als "kort" in het logboek. Het openen van het toetsenbord om te typen telt nooit als verlaten.
 - Het adminpaneel toont een melding (toast + vibratie, `navigator.vibrate`, als dat beschikbaar is) met groepsnaam, tijdstip, duur en tijdens welke vraag. Er staan knoppen "Strafpunt(en)" (instelbaar, standaard −1) en "Negeren". De admin beslist; er worden nooit automatisch punten afgetrokken.
 - Er is een logboek met alle meldingen in het menu.
 

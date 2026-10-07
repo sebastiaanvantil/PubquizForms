@@ -7,6 +7,7 @@ import { scoreItem, buildScoreboard, bonusPoints, parseNumber } from './scoring.
 import { groupNameKey, matchName } from './names.js';
 
 const QUIET_AFTER_MS = 25000;
+const GRACE_MS = 5000; // back within this time (a reload, a slip of the thumb): no report
 const CURRENCY = { EUR: '€', USD: '$' };
 const TYPE_LABEL = {
   mc: 'Meerkeuze', exact_number: 'Exact getal', margin_number: 'Getal met marge', closest_rank: 'Dichtst bij',
@@ -393,6 +394,42 @@ async function handleEvent(event, action) {
     const longest = Math.max(0, ...related.map((e) => e.awayMs ?? 0));
     await addEntry(event.groupId, -penaltyAmount(), 'penalty', `Pagina verlaten (${fmtDuration(longest)})`, event.itemId);
   }
+}
+
+const isReturn = (event) => String(event.type).startsWith('return_');
+const isShort = (event) => isReturn(event) && event.awayMs != null && event.awayMs < GRACE_MS;
+const settling = new Set();
+
+/** File short absences away, together with the "left" report that goes with them. */
+function settleShortEvents() {
+  const batch = fb.writeBatch(db);
+  let count = 0;
+  for (const back of A.events) {
+    if (back.handled || settling.has(back.id) || !isShort(back) || !back.at) continue;
+    const left = A.events.filter((e) => !e.handled && !settling.has(e.id) && !isReturn(e)
+      && e.groupId === back.groupId && e.itemId === back.itemId
+      && e.at && e.at <= back.at && e.at >= back.at - back.awayMs - GRACE_MS);
+    for (const event of [back, ...left]) {
+      settling.add(event.id);
+      batch.update(fb.doc(db, 'events', event.id), { handled: 'short' });
+      count++;
+    }
+  }
+  if (count) batch.commit().catch((error) => console.error(error));
+}
+
+/** A new report came in live: decide whether and when the admin hears about it. */
+function announceEvent(event) {
+  if (isReturn(event)) {
+    if (!isShort(event)) showEventToast(event);
+    return;
+  }
+  // "Left": wait and see whether the group is back within the grace period.
+  setTimeout(() => {
+    const current = A.events.find((e) => e.id === event.id);
+    const back = A.events.some((e) => isReturn(e) && e.groupId === event.groupId && e.itemId === event.itemId && (e.at ?? 0) >= event.at);
+    if (current && !current.handled && !back) showEventToast(event);
+  }, GRACE_MS + 1500);
 }
 
 function describeEvent(event) {
@@ -911,13 +948,13 @@ const SHEETS = {
             h('button', { class: 'step', type: 'button', onclick: () => setAmount(-1) }, '−'),
             h('div', { class: 'points' }, `−${amount}`),
             h('button', { class: 'step', type: 'button', onclick: () => setAmount(1) }, '+')),
-          h('div', { class: 'note' }, 'Er gaat nooit automatisch iets af; jij beslist per melding.')),
+          h('div', { class: 'note' }, 'Er gaat nooit automatisch iets af; jij beslist per melding. Wie binnen 5 seconden terug is, geeft geen melding.')),
         A.events.length === 0 && h('p', { class: 'hint' }, 'Nog geen meldingen.'),
         h('div', { class: 'list' }, A.events.map((event) => h('div', { class: `item ${event.handled ? 'dim' : 'flag'}` },
           h('div', { class: 'name' }, groupName(event.groupId)),
           h('div', { class: 'sub' }, `${describeEvent(event)} · ${itemTitle(event.itemId)} · ${fmtTime(event.at)}`),
           h('div', { class: 'side' }, event.handled && h('span', { class: `pill ${event.handled === 'penalty' ? 'bad' : ''}` },
-            event.handled === 'penalty' ? 'strafpunt' : 'genegeerd')),
+            { penalty: 'strafpunt', short: 'kort' }[event.handled] ?? 'genegeerd')),
           !event.handled && h('div', { class: 'buttons' }, eventButtons(event))))),
       ];
     },
@@ -1269,10 +1306,11 @@ function startListening() {
       if (eventsLoaded) {
         for (const change of snap.docChanges()) {
           const data = change.doc.data();
-          if (change.type === 'added' && !data.handled) showEventToast({ id: change.doc.id, ...data, at: millis(data.at) ?? Date.now() });
+          if (change.type === 'added' && !data.handled) announceEvent({ id: change.doc.id, ...data, at: millis(data.at) ?? Date.now() });
         }
       }
       eventsLoaded = true;
+      settleShortEvents();
       render();
     }, denied),
   ];

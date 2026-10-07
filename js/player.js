@@ -405,6 +405,11 @@ function reportInterruptedAbsence() {
   });
 }
 
+function isTyping() {
+  const active = document.activeElement;
+  return document.visibilityState === 'visible' && Boolean(active) && active.matches('input, textarea');
+}
+
 function watchPresence() {
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') leave('hidden');
@@ -416,7 +421,9 @@ function watchPresence() {
     clearTimeout(blurTimer);
     const lostAt = Date.now();
     blurTimer = setTimeout(() => {
-      if (!document.hasFocus()) leave('blur', lostAt);
+      // Some phones take focus away from the page while the on-screen
+      // keyboard is open. Typing an answer is not leaving.
+      if (!document.hasFocus() && !isTyping()) leave('blur', lostAt);
     }, BLUR_DEBOUNCE_MS);
   });
   window.addEventListener('focus', () => {

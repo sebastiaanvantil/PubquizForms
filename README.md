@@ -205,7 +205,10 @@ await probeer('antwoord verwijderen', () => fb.deleteDoc(ref));
 
 **Tab-meldingen (op iPhone Safari én Android Chrome)**
 
-Doe elk van deze dingen terwijl er een vraag openstaat. Je telefoon met het adminpaneel hoort te trillen en een melding te tonen met de groepsnaam en de duur.
+Doe elk van deze dingen terwijl er een vraag openstaat en blijf telkens **langer dan 5 seconden** weg. Je telefoon met het adminpaneel hoort te trillen en een melding te tonen met de groepsnaam en de duur.
+
+- [ ] Ververs de pagina, of ga korter dan 5 seconden weg → er komt géén melding (in **Menu → Meldingen** staat hij als "kort").
+- [ ] Tik in een antwoordveld zodat het toetsenbord opent en typ een antwoord → er komt géén melding.
 
 - [ ] Wissel naar een andere app en kom terug.
 - [ ] Open een nieuw tabblad en kom terug.
